@@ -4,7 +4,7 @@ import { Box, Button, Select, MenuItem, TextField, CircularProgress } from '@mui
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const API_URL = 'https://catalog-management-system-dev-ak3ogf6zea-uc.a.run.app/cms/products';
+const API_URL = 'https://fakestoreapi.com/products';
 
 const ProductTable = () => {
   const [products, setProducts] = useState([]);
@@ -27,7 +27,7 @@ const ProductTable = () => {
 
       if (search) {
         filteredData = filteredData.filter((product) =>
-          product.name.toLowerCase().includes(search.toLowerCase())
+          product.title.toLowerCase().includes(search.toLowerCase())
         );
       }
       if (category) {
@@ -54,7 +54,7 @@ const ProductTable = () => {
       width: 100,
       renderCell: (params) => <img src={params.value} alt="product" width="50" />,
     },
-    { field: 'name', headerName: 'Name', width: 200 },
+    { field: 'title', headerName: 'Name', width: 200 },
     { field: 'category', headerName: 'Category', width: 150 },
     { field: 'price', headerName: 'Price', width: 100 },
     {
@@ -70,16 +70,18 @@ const ProductTable = () => {
   ];
 
   return (
-    <Box>
+    <Box sx={{ height: 400, width: '100%' }}>
       <TextField
+      sx={{}}
         label="Search Product"
         variant="outlined"
         onChange={(e) => setSearch(e.target.value)}
       />
       <Select value={category} onChange={(e) => setCategory(e.target.value)}>
         <MenuItem value="">All Categories</MenuItem>
-        <MenuItem value="Electronics">Electronics</MenuItem>
-        <MenuItem value="Fashion">Fashion</MenuItem>
+        <MenuItem value="electronics">Electronics</MenuItem>
+        <MenuItem value="men's clothing">Men's Clothing</MenuItem>
+        <MenuItem value="jewelery">Jewelery</MenuItem>
       </Select>
       <Select value={sort} onChange={(e) => setSort(e.target.value)}>
         <MenuItem value="">Sort By Price</MenuItem>
