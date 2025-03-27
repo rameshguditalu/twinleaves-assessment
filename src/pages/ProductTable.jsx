@@ -1,10 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { Box, Button, Select, MenuItem, TextField, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const API_URL = 'https://fakestoreapi.com/products';
+const API_URL = 'https://catalog-management-system-dev-ak3ogf6zea-uc.a.run.app/cms/products';
+
+function debounce(func, delay) {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => func.apply(this, args), delay);
+  };
+}
 
 const ProductTable = () => {
   const [products, setProducts] = useState([]);
@@ -15,19 +23,15 @@ const ProductTable = () => {
   const [sort, setSort] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchData();
-  }, [page, search, category, sort]);
-
   const fetchData = async () => {
     setLoading(true);
     try {
       const response = await axios.get(`${API_URL}?page=${page}`);
-      let filteredData = response.data;
+      let filteredData = response.data.products.filter((product) => product.id !== null);
 
       if (search) {
         filteredData = filteredData.filter((product) =>
-          product.title.toLowerCase().includes(search.toLowerCase())
+          product.name.toLowerCase().includes(search.toLowerCase())
         );
       }
       if (category) {
@@ -46,6 +50,12 @@ const ProductTable = () => {
     setLoading(false);
   };
 
+  const debouncedFetchData = useCallback(debounce(fetchData, 300), [page, search, category, sort]);
+
+  useEffect(() => {
+    debouncedFetchData();
+  }, [debouncedFetchData]);
+
   const columns = [
     { field: 'id', headerName: 'ID', width: 70 },
     {
@@ -54,9 +64,9 @@ const ProductTable = () => {
       width: 100,
       renderCell: (params) => <img src={params.value} alt="product" width="50" />,
     },
-    { field: 'title', headerName: 'Name', width: 200 },
-    { field: 'category', headerName: 'Category', width: 150 },
-    { field: 'price', headerName: 'Price', width: 100 },
+    { field: 'name', headerName: 'Name', width: 200 },
+    { field: 'main_category', headerName: 'Category', width: 150 },
+    { field: 'compare_price', headerName: 'Price', width: 100 },
     {
       field: 'action',
       headerName: 'Details',
@@ -70,18 +80,17 @@ const ProductTable = () => {
   ];
 
   return (
-    <Box sx={{ height: 400, width: '100%' }}>
+    <Box>
       <TextField
-      sx={{}}
         label="Search Product"
         variant="outlined"
         onChange={(e) => setSearch(e.target.value)}
       />
       <Select value={category} onChange={(e) => setCategory(e.target.value)}>
         <MenuItem value="">All Categories</MenuItem>
-        <MenuItem value="electronics">Electronics</MenuItem>
-        <MenuItem value="men's clothing">Men's Clothing</MenuItem>
-        <MenuItem value="jewelery">Jewelery</MenuItem>
+        <MenuItem value="HOUSE HOLD NEEDS">HOUSE HOLD NEEDS</MenuItem>
+        <MenuItem value="CLEANING & HOUSEHOLD">CLEANING & HOUSEHOLD</MenuItem>
+        <MenuItem value="KITCHEN,GARDEN & PETS">KITCHEN,GARDEN & PETS</MenuItem>
       </Select>
       <Select value={sort} onChange={(e) => setSort(e.target.value)}>
         <MenuItem value="">Sort By Price</MenuItem>
