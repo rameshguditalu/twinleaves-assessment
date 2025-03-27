@@ -35,7 +35,7 @@ const ProductTable = () => {
         );
       }
       if (category) {
-        filteredData = filteredData.filter((product) => product.category === category);
+        filteredData = filteredData.filter((product) => product.main_category === category);
       }
       if (sort === 'asc') {
         filteredData.sort((a, b) => a.price - b.price);
@@ -59,7 +59,7 @@ const ProductTable = () => {
   const columns = [
     { field: 'id', headerName: 'ID', width: 70 },
     {
-      field: 'image',
+      field: 'manufacturerImage',
       headerName: 'Image',
       width: 100,
       renderCell: (params) => <img src={params.value} alt="product" width="50" />,
@@ -81,31 +81,33 @@ const ProductTable = () => {
 
   return (
     <Box>
-      <TextField
-        label="Search Product"
-        variant="outlined"
-        onChange={(e) => setSearch(e.target.value)}
-      />
-      <Select value={category} onChange={(e) => setCategory(e.target.value)}>
-        <MenuItem value="">All Categories</MenuItem>
-        <MenuItem value="HOUSE HOLD NEEDS">HOUSE HOLD NEEDS</MenuItem>
-        <MenuItem value="CLEANING & HOUSEHOLD">CLEANING & HOUSEHOLD</MenuItem>
-        <MenuItem value="KITCHEN,GARDEN & PETS">KITCHEN,GARDEN & PETS</MenuItem>
-      </Select>
-      <Select value={sort} onChange={(e) => setSort(e.target.value)}>
-        <MenuItem value="">Sort By Price</MenuItem>
-        <MenuItem value="asc">Low to High</MenuItem>
-        <MenuItem value="desc">High to Low</MenuItem>
-      </Select>
-
-      {loading ? <CircularProgress /> : (
-        <DataGrid
-          rows={products}
-          columns={columns}
-          pageSize={5}
-          onPageChange={(newPage) => setPage(newPage + 1)}
+      <Box display="flex" gap={2} marginBottom={2} top={0}>
+        <TextField
+          label="Search Product"
+          variant="outlined"
+          onChange={(e) => setSearch(e.target.value)}
         />
-      )}
+        <Select value={category} onChange={(e) => setCategory(e.target.value)}>
+          <MenuItem value="">All Categories</MenuItem>
+          <MenuItem value="HOUSE HOLD NEEDS">HOUSE HOLD NEEDS</MenuItem>
+          <MenuItem value="CLEANING & HOUSEHOLD">CLEANING & HOUSEHOLD</MenuItem>
+          <MenuItem value="KITCHEN,GARDEN & PETS">KITCHEN,GARDEN & PETS</MenuItem>
+        </Select>
+        <Select value={sort} onChange={(e) => setSort(e.target.value)}>
+          <MenuItem value="">Sort By Price</MenuItem>
+          <MenuItem value="asc">Low to High</MenuItem>
+          <MenuItem value="desc">High to Low</MenuItem>
+        </Select>
+      </Box>
+
+      {loading ? <CircularProgress sx={{ display: 'block', margin: '20px auto' }} /> : null}
+
+      <DataGrid
+        rows={products}
+        columns={columns}
+        pageSize={5}
+        onPageChange={(newPage) => setPage(newPage + 1)}
+      />
     </Box>
   );
 };
